@@ -66,7 +66,7 @@ export async function isLoggedIn() {
 
 export async function authenticateUser(email, password) {
     const resp = await fetch(
-      PUBLIC_BACKEND_BASE_URL + '/signin',
+      PUBLIC_BACKEND_BASE_URL + '/auth',
       {
         method: 'POST',
         mode: 'cors',

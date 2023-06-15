@@ -2,8 +2,6 @@ import { PrismaClient, Prisma } from '@prisma/client'
 import request from "supertest"
 import app from "../../app.js"
 
-let user = ''
-
 // test 1 post user
 async function cleanupDatabase() {
   const prisma = new PrismaClient();
@@ -71,7 +69,7 @@ it("with same email should fail", async () => {
 
   // test 4
   it("with invalid email format should fail", async () => {
-    user.email = "invalid_email_format"
+    user.email = "invalid_email_format" 
     user.password = "insecure"
     const response = await request(app)
       .post("/users")
@@ -93,6 +91,5 @@ it("with same email should fail", async () => {
   expect(response.body.error).toBeTruthy;
   expect(response.body.error.name).toBe('cannot be blank');
   });
-
 })
 
