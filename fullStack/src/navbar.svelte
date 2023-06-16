@@ -6,13 +6,8 @@
     document.documentElement.setAttribute("data-theme", currentTheme);
   
     function goToSignInPage() {
-      goto ('/signin');
+      goto ('/auth');
     }
-
-    function goToCreateUser() {
-      goto ('/users')
-    }
-
   
     function toggleTheme() {
         currentTheme = currentTheme === "retro" ? "dracula" : "retro";
@@ -90,14 +85,15 @@ nav1 ul:hover {
   </nav>
   
   <nav1>
-    <ul class="text-primary">
+    <!-- <ul class="text-primary">
       <button on:click={goToCreateUser}>Create an Account</button>
-    </ul>
+    </ul> -->
+
     <ul class="text-primary">
       {#if $isAuthenticated}
         <button on:click={logOut}>Sign Out</button>
       {:else}
-        <a href="/signin" on:click={goToSignInPage}>Log In</a>{/if}
+        <a href="/auth" on:click={goToSignInPage}>Log In</a>{/if}
     </ul>
     <ul>
       <button class="text-primary w-5 flex content-start" on:click={toggleTheme}>

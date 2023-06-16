@@ -1,10 +1,14 @@
 <script>
     import { PUBLIC_BACKEND_BASE_URL } from '$env/static/public';
-	import { isAuthenticated, authenticateUser} from '../../utils/auth';
+	  import { isAuthenticated, authenticateUser} from '../../utils/auth';
+    import { goto } from '$app/navigation'; 
 
     let formErrors = {};
     let isLoading = false
-  
+    function postSignUp() {
+        goto ('/users/new')
+    }
+
     async function createUser(evt) {
       evt.preventDefault()
       if (evt.target['password'].value != evt.target['password-confirmation'].value) {
@@ -35,7 +39,7 @@
 
         if (res.success){
             isAuthenticated.set(true)
-            // postSignUp();
+            postSignUp();
         } else { 
           isAuthenticated.set(false)
           alert ('sign up successful but authentication failed');
@@ -47,17 +51,16 @@
     }
   </script>
 
-    <!-- <div class="flex justify-center w-full">
-        <div class="alert alert-info shadow-l" style="width: 90%;">
-            <p class="text-left">Please sign up before you post a job.</p>
-        </div>
-    </div> -->
+{#if $isAuthenticated}
+  <alert class="alert alert-warning flex justify-center" >
+    You are already logged in, click<a class="link-hover" href="/">here</a>to return to front page
+  </alert>
 
+{:else}
   <h1 class="text-center text-xl">Create an Account</h1>
   <div class="text-center">
       <a class="link-hover italic text-xs" href="/signin"
-          >Already have an account? Click here to login instead.</a
-      >
+          >Already have an account? Click here to login instead.</a>
   </div>
   <div class="flex justify-center items-center mt-8">
       <form on:submit={createUser} class="w-1/3">
@@ -148,6 +151,6 @@
           </div>
       </form>
   </div>
-
+{/if}
 
   

@@ -1,6 +1,6 @@
 <script>
     import { goto } from '$app/navigation';
-    import { authenticateUser, isAuthenticated } from '../../utils/auth.js'; 
+    import { authenticateUser, isAuthenticated, goToCreateUser } from '../../utils/auth.js'; 
     import { onMount } from 'svelte';
   
     let isLoading = false;
@@ -41,11 +41,16 @@
   
   {#if $isAuthenticated}
     <div class="alert-error p-5 w-1/2 ml-auto mr-auto rounded-xl flex justify-center item-center">
-      You are already logged in, go to the front page or post a job.
+      You are already logged in.
     </div>
   
   {:else}
     <h1 class="text-center text-xl">Log In</h1>
+      <h2 class="text-center text-sm mt-5">
+        <button on:click={goToCreateUser}>
+          Don't have an account? Click <u>here</u> to sign up.
+        </button>
+      </h2>
     {#if showErrorMessage}
       <div class="flex justify-center w-full">
         <div class="alert alert-warning shadow-lg" style="width: 90%;">
@@ -56,12 +61,6 @@
     {/if}
   
     <div class="flex justify-center items-center mt-8">
-      {#if showErrorMessage}
-        <div class="flex justify-center items-center">
-          Hello {email}
-          
-        </div>
-      {:else}
         <form on:submit={signIn} class="w-1/3">
           <div class="form-control w-full">
             <label class="label" for="email">
@@ -93,6 +92,5 @@
             </div>
           </div>
         </form>
-      {/if}
     </div>
   {/if}
