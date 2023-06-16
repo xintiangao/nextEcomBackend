@@ -4,11 +4,12 @@
     import { onMount } from 'svelte';
   
     let isLoading = false;
+    let showModal = false;
     let showErrorMessage = false;
     let email = '';
     let password = '';
   
-    async function signIn(evt) {
+    export async function signIn(evt) {
       evt.preventDefault();
   
       const userData = {
@@ -25,6 +26,7 @@
   
       if (res.success){
         goto('/');
+        showModal = true;
       } else {
         showErrorMessage = true;
       }
