@@ -12,7 +12,18 @@ datasource db {
 
 model User {
   id       Int     @id @default(autoincrement())
+  Photos   Photos[]
   name     String?
   email    String  @unique
   password String?
+}
+
+model Photos {
+  User     User @relation(fields: [UserId], references: [id])
+  UserId   Int
+  id       Int     @id @default(autoincrement())
+  file     String?
+  price    Int?
+  title    String? 
+  description    String?  
 }

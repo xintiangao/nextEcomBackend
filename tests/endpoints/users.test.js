@@ -40,8 +40,6 @@ describe("POST /users", () => {
     expect(response.body.password).toBe(undefined);
   });
 
-
-
 // test 2
 it("with same email should fail", async () => {
     const response = await request(app)
@@ -52,7 +50,6 @@ it("with same email should fail", async () => {
     expect(response.body.error).toBeTruthy;
     expect(response.body.error.email).toBe('already taken');
   });
-
 
 // test 3 
   it("with invalid password should fail", async () => {

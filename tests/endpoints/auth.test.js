@@ -67,7 +67,6 @@ async function cleanupDatabase() {
         expect(response.statusCode).toBe(401);
         expect(response.body.accessToken).toBeFalsy;
       });
-
 })
 
 

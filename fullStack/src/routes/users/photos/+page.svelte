@@ -1,6 +1,6 @@
 <script>
     import { PUBLIC_BACKEND_BASE_URL } from '$env/static/public';
-	  import { isAuthenticated, authenticateUser} from '../../utils/auth';
+	  import { isAuthenticated, authenticateUser} from '../../../utils/auth';
     import { goto } from '$app/navigation'; 
 
     let formErrors = {};

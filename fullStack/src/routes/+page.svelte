@@ -1,5 +1,6 @@
 <script>
     import { isAuthenticated, getUserId } from "../utils/auth";
+    import { PUBLIC_BACKEND_BASE_URL } from '$env/static/public';
   
     let showModal = false;
   
@@ -25,19 +26,19 @@
             description: evt.target['description'].value,
         };
 
-        const response = await fetch(PUBLIC_BACKEND_BASE_URL + '/photos', {
+        const response = await fetch(PUBLIC_BACKEND_BASE_URL + '/photos', {   
         method: 'POST',
         mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(jobData)
+        body: JSON.stringify(photoData)
         });
 
         if (response.status == 200) {
         goto (`/photos/${photoData.id}`)
         } else {
-            console.error('Failed to create photo:', error);
+            console.log('Failed to create photo');
         }
 }
   </script>
