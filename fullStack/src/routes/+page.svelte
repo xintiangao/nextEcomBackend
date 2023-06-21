@@ -1,47 +1,89 @@
+<svelte:head>
+  <script src="/aws-sdk-s3.min.js"></script>
+</svelte:head>
+
 <script>
-    import { isAuthenticated, getUserId } from "../utils/auth";
-    import { PUBLIC_BACKEND_BASE_URL } from '$env/static/public';
-  
-    let showModal = false;
-  
-    function toggleModal(){
-      showModal = true
+   import { uploadMedia } from '../utils/s3-uploader.js';
+   import { isAuthenticated, getTokenFromLocalStorage } from '../utils/auth.js';
+   import { PUBLIC_BACKEND_BASE_URL } from '$env/static/public';
+
+   let formErrors = {};
+   let photos = [];
+   
+   async function fetchPhotos() {
+      let token = getTokenFromLocalStorage();
+
+      const resp = await fetch(PUBLIC_BACKEND_BASE_URL + '/photos', {   
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+         'Content-Type': 'application/json',
+         'Authorization': `Bearer ${token}`,
+      },
+   })
+    if (resp.ok) {
+      photos = await resp.json();
+    } else {
+      console.log('Failed to fetch photos');
     }
-  
-    async function postPhoto(evt) {
-        evt.preventDefault()
-        
+   }
+
+   fetchPhotos();
+
+   let showModal = false;
+   
+   function toggleModal(){
+      showModal = true
+   }
+   
+   function closeModal(){
+      showModal = false
+   }
+   
+   document.addEventListener('click', (event) => {
+      if (document.querySelector('.popup') && !document.querySelector('.popup').contains(event.target) && !event.target.closest('.btn-ghost')) {
+         closeModal();
+      }
+   });
+   
+   async function uploadImage(evt) {
+      evt.preventDefault()
+      const [fileName, fileUrl] = await uploadMedia(evt.target['file'].files[0]);
+      
+      // const userID = await verifyAccessToken(userID);
+
         const photoData = {
-
-            // user: getUserId(),
-            // file: 'test',
-            // price: '300000',
-            // title: '500000',
-            // description: 'testtesttesttest',
-
-            user: getUserId(),
-            file: evt.target['file'].value,
-            price: evt.target['price'].value,
+            // userId: userID,
+            file: fileUrl,
+            name: fileName,
             title: evt.target['title'].value,
+            price: evt.target['price'].value,
             description: evt.target['description'].value,
         };
 
-        const response = await fetch(PUBLIC_BACKEND_BASE_URL + '/photos', {   
+        let token = getTokenFromLocalStorage();
+
+        const resp = await fetch(PUBLIC_BACKEND_BASE_URL + '/photos', {   
         method: 'POST',
         mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(photoData)
-        });
 
-        if (response.status == 200) {
-        goto (`/photos/${photoData.id}`)
+        body: JSON.stringify(photoData)
+        }).catch(error => {
+            console.error('Error:', error);
+          });
+
+        if (resp && resp.status == 200) {
+         await fetchPhotos();
+         closeModal();
         } else {
             console.log('Failed to create photo');
         }
-}
-  </script>
+   }
+   </script>
   
   
   {#if $isAuthenticated}
@@ -59,12 +101,19 @@
   
   {#if showModal}
   <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
-    <div class="z-10 fixed rounded-xl flex justify-center w-[80%] bg-base-100 p-10">
-      <div class="w-full rounded-xl">
-        <form on:submit={postPhoto} class="w-full">
+    <div class="z-10 fixed rounded-xl flex justify-center w-[50%] bg-base-100 p-10">
+      <div class="popup w-full rounded-xl">
+        <form on:submit|preventDefault={uploadImage} class="w-full">
           <div class="flex flex-col lg:flex-row">
             <div class="form-control  w-full mt-2">
               <input class="file-input max-w-xs rounded-xl" type="file" name="file">
+
+               {#if 'file' in formErrors}
+                  <label class="label" for="file">
+                  <span class="label-text-alt text-red-500">{formErrors['file']}</span>
+                  </label>
+               {/if}
+               
             </div>
             <div class="w-full"></div>
           </div>
@@ -91,22 +140,24 @@
           </div>
         </form>
       </div>
-  </div>
+   </div>
   </div>
   {/if}
   
+  
      <div class="container mt-3 lg:mt-10 mx-auto px-2 lg:px-0"> 
         <div class="grid grid-rows-1 lg:grid-cols-3 gap-4">
+
            <div class="card bg-base-100 shadow-xl">
               <figure class="h-60">
-                 <img src="https://next-ecomm-josh123.s3.amazonaws.com/mountains-55067-1280.png" alt="Shoes">
+                 <img src="https://next-ecomm-xinxia.s3.amazonaws.com/horseshoeBend.JPG" alt="horseshoeBend">
               </figure> 
               <div class="card-body">
                  <h2 class="card-title">
-                    Mountains 
+                  horseshoeBend
                     <div class="badge badge-secondary">NEW</div>
                  </h2>
-                 <p>Mountains</p> 
+                 <p>horseshoeBend</p> 
                  <div class="card-actions items-end justify-end">
                     <h3 class="text-xl font-thin mr-4">USD 99.96</h3>
                     <button data-price="9996" data-id="1" class="btn">Buy Now</button>
@@ -115,14 +166,14 @@
            </div>
            <div class="card bg-base-100 shadow-xl">
               <figure class="h-60">
-                 <img src="https://next-ecomm-josh123.s3.amazonaws.com/mountains-190055-1280.jpeg" alt="Shoes">
+                 <img src="https://next-ecomm-xinxia.s3.amazonaws.com/bbq.jpg" alt="barbecue">
               </figure> 
               <div class="card-body">
                  <h2 class="card-title">
-                    Sunset over Mountains 
+                     Barbecue 
                     <div class="badge badge-secondary">NEW</div>
                  </h2> 
-                 <p>Top of the world sunset!</p> 
+                 <p>Eat</p> 
                  <div class="card-actions items-end justify-end">
                     <h3 class="text-xl font-thin mr-4">USD 56.78</h3>
                     <button data-price="5678" data-id="2" class="btn">Buy Now</button>
@@ -131,35 +182,57 @@
            </div>
            <div class="card bg-base-100 shadow-xl">
               <figure class="h-60">
-                 <img src="https://next-ecomm-josh123.s3.amazonaws.com/road-1072823-1280.jpeg" alt="Shoes">
+                 <img src="https://next-ecomm-xinxia.s3.amazonaws.com/landscape-bridge-.jpeg" alt="landscape">
               </figure> 
               <div class="card-body">
                  <h2 class="card-title">
-                    Road to Autumn 
+                  bridge
                     <div class="badge badge-secondary">NEW</div>
                  </h2> 
-                 <p>Beautiful jungle road</p> 
+                 <p>landscape</p> 
                  <div class="card-actions items-end justify-end">
                     <h3 class="text-xl font-thin mr-4">USD 183.67</h3> 
                     <button data-price="18367" data-id="3" class="btn">Buy Now</button>
                  </div>
               </div> 
            </div>
+
            <div class="card bg-base-100 shadow-xl">
               <figure class="h-60">
-                 <img src="https://next-ecomm-josh123.s3.amazonaws.com/sunrise-1014712-1280.jpeg" alt="Shoes">
+                 <img src="https://next-ecomm-xinxia.s3.amazonaws.com/trees-landscape.jpeg" alt="trees">
               </figure> 
               <div class="card-body">
                  <h2 class="card-title">
-                    A Day in Life of a Fisherman 
+                    TREES
                     <div class="badge badge-secondary">NEW</div>
                  </h2> 
-                 <p>I want to be a fisherman</p> 
+                 <p>Landscape</p> 
                  <div class="card-actions items-end justify-end">
                     <h3 class="text-xl font-thin mr-4">USD 239.99</h3>
                     <button data-price="23999" data-id="4" class="btn">Buy Now</button>
                  </div>
               </div> 
            </div>
+
+              {#each photos as photo}
+                <div class="card bg-base-100 shadow-xl">
+                  <figure class="h-60">
+                    <img src={photo.file} alt={photo.name}>
+                  </figure>
+                  <div class="card-body">
+                    <h2 class="card-title">
+                      {photo.title}
+                  <div class="badge badge-secondary">NEW</div>
+                    </h2>
+                    <p>{photo.description}</p>
+                    <div class="card-actions items-end justify-end">
+                      <h3 class="text-xl font-thin mr-4">USD {photo.price}</h3>
+                      <button data-price={photo.price} data-id={photo.id} class="btn">Buy Now</button>
+                    </div>
+                  </div>
+                </div>
+              {/each}
+
         </div>
      </div>
+     

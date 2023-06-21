@@ -1,5 +1,5 @@
 <script>
-    import { isAuthenticated, logOut } from "./utils/auth.js";
+    import { isAuthenticated, logOut } from "../utils/auth.js";
     import { goto } from '$app/navigation';
   
     let currentTheme = localStorage.getItem("theme");

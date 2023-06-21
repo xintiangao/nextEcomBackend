@@ -1,34 +1,48 @@
 import express from 'express';
 import prisma from '../utils/prisma.js';
-import { isAuthenticated } from '../utils/auth.js';
+import auth from '../middlewares/auth.js';
 
 const router = express.Router();
 
-router.post('/photos', isAuthenticated, async (req, res) => {
-  // Access the authenticated user's information
-  const { userId } = req.user;
+  router.post('/', auth, async (req, res) => {
+    const data = req.body;
 
-  // Access the uploaded file from the request
-  const file = req.file;
+    try {
+      const uploadedPhoto = await prisma.photos.create({
+        data: {
+          id: data.id,
+          file:data.file,
+          UserId: req.user.payload.id,
+          name: data.name,
+          title: data.title,
+          price: data.price,
+          description: data.description
+        },
+      });
 
-  // Handle the file upload and save it to the database or storage
-  // Here, you can use Prisma to save the file information to the database
-  try {
-    const uploadedPhoto = await prisma.photo.create({
-      data: {
-        userId,
-        fileName: file.filename,
-        // Add other relevant information about the photo
-      },
-    });
+      res.status(200).json({ success: true, photos: uploadedPhoto });
+    } catch (error) {
 
-    // Send a success response
-    res.status(200).json({ success: true, photo: uploadedPhoto });
-  } catch (error) {
-    // Handle any errors that occur during the upload process
-    console.error('Error uploading photo:', error);
-    res.status(500).json({ success: false, error: 'Failed to upload photo' });
-  }
-});
+      console.error('Error uploading photo:', error);
+      res.status(500).json({ success: false, error: 'Failed to upload photo' });
+    }
+  });
+
+  router.get('/', async (req,res) => {
+    const photos = await prisma.photos.findMany();
+    res.json(photos)
+  });
+  
+  router.delete('/:id', auth, async (req, res) => {
+    const photos = await prisma.photos.findUnique({
+      where: {
+        id: req.params.id
+      }
+    })
+    // we have access to `req.user` from our auth middleware function (see code above where the assignment was made)
+    if (req.user.id != photos.user_id) {
+        return res.status(401).send({"error": "Unauthorized"})
+    }
+  });
 
 export default router;

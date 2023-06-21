@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Photos" ALTER COLUMN "price" SET DATA TYPE TEXT;

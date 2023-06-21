@@ -33,15 +33,15 @@ router.post('/', async (req, res) => {
       data,
     });
 
-    const msg = {
-      to: user.email,
-      from: 'dschantz801@gmail.com', // Change to your verified sender
-      subject: 'Welcome to our website',
-      text: 'Thank you for signing up!',
-      html: '<strong>Thank you for signing up!</strong>',
-    };
+    // const msg = {
+    //   to: user.email,
+    //   from: 'dschantz801@gmail.com', // Change to your verified sender
+    //   subject: 'Welcome to our website',
+    //   text: 'Thank you for signing up!',
+    //   html: '<strong>Thank you for signing up!</strong>',
+    // };
 
-    await sgMail.send(msg);
+    // await sgMail.send(msg);
 
     return res.json(filter(user, 'id', 'name', 'email'));
   } catch (err) {

@@ -39,4 +39,4 @@ const router = express.Router()
     return res.json({ accessToken })
   })
 
-  export default router
+  export default router;
