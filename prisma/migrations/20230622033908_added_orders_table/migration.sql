@@ -1,0 +1,15 @@
+-- AlterTable
+ALTER TABLE "Photos" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- CreateTable
+CREATE TABLE "Order" (
+    "id" SERIAL NOT NULL,
+    "photosId" INTEGER NOT NULL,
+    "price" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
+);
+
+-- AddForeignKey
+ALTER TABLE "Order" ADD CONSTRAINT "Order_photosId_fkey" FOREIGN KEY ("photosId") REFERENCES "Photos"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

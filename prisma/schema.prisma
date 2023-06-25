@@ -11,20 +11,32 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  Photos   Photos[]
-  name     String?
-  email    String  @unique
-  password String?
+  id        Int      @id @default(autoincrement())
+  name      String?
+  email     String   @unique
+  password  String?
+  photos    Photos[] 
 }
 
 model Photos {
-  User     User @relation(fields: [UserId], references: [id])
-  UserId   Int
-  id       Int     @id @default(autoincrement())
-  name     String?
-  file     String?
-  price    String?
-  title    String? 
-  description    String?  
+  id           Int       @id @default(autoincrement())
+  UserId       Int
+  name         String?
+  file         String?
+  price        String?
+  title        String? 
+  description  String?  
+  createdAt  DateTime  @default(now())
+            
+  user         User      @relation(fields: [UserId], references: [id])
+  order        Order[] 
+}
+
+model Order {
+  id         Int       @id @default(autoincrement())
+  photosId   Int  
+  price      Int 
+  createdAt  DateTime  @default(now())
+
+  photos     Photos    @relation(fields: [photosId], references: [id])
 }
